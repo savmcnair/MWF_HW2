@@ -9,12 +9,128 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##1. Get EVS data. The data you want is ZA7500. You can find it here: https://search.gesis.org/research_data/ZA7500 (10%)
+#1. Get EVS data. The data you want is ZA7500. You can find it here: https://search.gesis.org/research_data/ZA7500 (10%)
 I made a research account under my UMD email, smcnair1@umd.edu to download the data. I downloaded the SPSS version of the data, and stored it in the folder I will be working out of for this assignment.
 
-##2. Write an overall report as a pdf.
-#• clean data for analysis (20%)
-#• descriptive tables, graphs and regression tables (20%)
-#• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)
+#2. Write an overall report as a pdf.
+The two variables of interest are v72 and v80 (I’ll let you discover what exactly they measure). Other variables
+you should keep are age, education, sex and country. For the overall report I would like to have a short
+intro about the research and data (one paragraph), a section with descriptives that includes max two tables
+(e.g., one for continuous variables and one for categorical variables), a section that includes two graphs: how
+the two variables of interest change with age, and a section with two regression models explaining the two
+dependent variables. The model should include: age, age squared, sex and education. The results from both
+models should be presented in a single table. Add a sentence or two interpreting each table and graph.
 
-##3. Country level automated report in html.
+The European Values Study is a large-scale, cross-national and longitudinal survey research program on how Europeans think about family, work, religion, politics, and society. Repeated every nine years in an increasing number of countries, the survey provides insights into the ideas, beliefs, preferences, attitudes, values, and opinions of citizens all over Europe.
+
+##• clean data for analysis (20%)
+necessary packages
+```{r}
+library(haven)
+```
+
+pull in data 
+```{r}
+location <- "C:/Users/smcnair1/Desktop/MWF_HW2/ZA7500_v5-0-0.sav/ZA7500_v5-0-0.sav"
+dataset <- read_sav(location)
+```
+
+examine data 
+```{r}
+names(dataset)
+```
+
+Observations from first glance at data:
+age variable is "age"
+education of respondent recoded into 3 categories is "v243_r"
+sex of respondent "v225"
+country (with abbreviation) is "c_abrv"
+v72 is child suffers with working mother (1-4)
+v80 is jobs are scarce... giving (nation) priority (1-5)
+
+_DE columns are duplicates with many NAs, I won't need these for my analyses
+
+remove _DE columns
+```{r}
+dataset <- dataset[, !grepl('_DE', names(dataset))]
+```
+
+remove incomplete questionnaires
+```{r}
+dataset <- dataset[dataset$fmissings != 1, ]
+```
+
+keep only the columns of interest (above are the variables I selected)
+```{r}
+dataset <- dataset[, c("age", "v243_r", "v225", "c_abrv", "v72", "v80")]
+```
+
+remove entries where education level question was refused and remove rows with NAs
+```{r}
+dataset <- dataset[dataset$v243_r != 66, ]
+dataset <- na.omit(dataset)
+```
+
+rename columns, keep attributes
+```{r}
+colnames(dataset) <- c("age", "education", "sex", "country", "child_suffers_mom", "job_scarcity")
+```
+
+now we have a clean, relevant, analyzable dataset!
+
+##• descriptive tables, graphs and regression tables (20%)
+descriptive tables
+continuous - given that child suffers and job scarcity variables are bipolar lickert scales with numerical values, im making the analytical decision to include them here
+```{r}
+continuous_summary <- data.frame(
+  Variable = c("age", "child_suffers_mom", "job_scarcity"),
+  Mean = c(mean(dataset$age), mean(dataset$child_suffers_mom), mean(dataset$job_scarcity)),
+  Median = c(median(dataset$age), median(dataset$child_suffers_mom), median(dataset$job_scarcity)),
+  SD = c(sd(dataset$age), sd(dataset$child_suffers_mom), sd(dataset$job_scarcity)),
+  Min = c(min(dataset$age), min(dataset$child_suffers_mom), min(dataset$job_scarcity)),
+  Max = c(max(dataset$age), max(dataset$child_suffers_mom), max(dataset$job_scarcity)),
+  Range = c(max(dataset$age) - min(dataset$age), 
+            max(dataset$child_suffers_mom) - min(dataset$child_suffers_mom),
+            max(dataset$job_scarcity) - min(dataset$job_scarcity))
+)
+```
+
+categorical 
+create summary
+```{r}
+get_categorical_summary <- function(variable, var_name) {
+  freq_table <- table(variable)  # Frequency table
+  prop_table <- prop.table(freq_table) * 100  # Percentage table
+  
+  summary_df <- data.frame(
+    Variable = var_name,
+    Level = names(freq_table),
+    Frequency = as.integer(freq_table),
+    Percentage = round(as.numeric(prop_table), 2)
+  )
+  
+  return(summary_df)
+}
+```
+
+create summmary for each and append to one table
+```{r}
+education_summary <- get_categorical_summary(dataset$education, "education")
+sex_summary <- get_categorical_summary(dataset$sex, "sex")
+country_summary <- get_categorical_summary(dataset$country, "country")
+
+combined_summary <- rbind(education_summary, sex_summary, country_summary)
+
+print(combined_summary)
+```
+
+
+graphs
+
+regression tables
+
+##• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)
+
+#3. Country level automated report in html.
+##• the 33 reports and the syntax that produces them (20%)
+##• dynamic (i.e., changes depending on the data) interpretation of results (10%)
