@@ -79,6 +79,13 @@ colnames(dataset) <- c("age", "education", "sex", "country", "child_suffers_mom"
 now we have a clean, relevant, analyzable dataset!
 
 ##• descriptive tables, graphs and regression tables (20%)
+necessary packages
+```{r}
+library(dplyr)
+#install.packages("summarytools")
+library(summarytools)
+```
+
 descriptive tables
 continuous - given that child suffers and job scarcity variables are bipolar lickert scales with numerical values, im making the analytical decision to include them here
 ```{r}
@@ -126,6 +133,32 @@ print(combined_summary)
 
 
 graphs
+necessary packages
+```{r}
+library(ggplot2)
+```
+
+scatter plots for each variable
+```{r}
+ggplot(dataset, aes(x = age, fill = factor(child_suffers_mom))) +
+  geom_bar(position = "fill") +
+  labs(x = "Age", y = "Proportion", fill = "Agree (1) -> Disagree (4)") +
+  ggtitle("Agreement that 'when a mother works for pay, the children suffers', by Age") +
+  scale_y_continuous(labels = scales::percent) +  
+  theme_minimal()
+```
+(1 = agree strongly, 2 = agree, 3 = disagree, 4 = disagree strongly)
+
+```{r}
+ggplot(dataset, aes(x = age, fill = factor(job_scarcity))) +
+  geom_bar(position = "fill") +
+  labs(x = "Age Group", y = "Proportion", fill = "Agree (1) -> Disagree (5)") +
+  ggtitle("Agreement that 'when jobs are scarce, employers should give 
+  priority to {NATIONALITY} people over immigrants', by Age") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal()
+```
+
 
 regression tables
 
