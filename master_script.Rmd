@@ -27,6 +27,7 @@ The European Values Study is a large-scale, cross-national and longitudinal surv
 necessary packages
 ```{r}
 library(haven)
+library(stargazer)
 ```
 
 pull in data 
@@ -138,7 +139,7 @@ necessary packages
 library(ggplot2)
 ```
 
-scatter plots for each variable
+child suffers when mom works
 ```{r}
 ggplot(dataset, aes(x = age, fill = factor(child_suffers_mom))) +
   geom_bar(position = "fill") +
@@ -147,8 +148,9 @@ ggplot(dataset, aes(x = age, fill = factor(child_suffers_mom))) +
   scale_y_continuous(labels = scales::percent) +  
   theme_minimal()
 ```
-(1 = agree strongly, 2 = agree, 3 = disagree, 4 = disagree strongly)
+With age, people tend to agree with the statement "when a mother works for pay, the children suffers" more. The agreement is more moderate, as most people with age will select "agree" (2) over "agree strongly" (1).
 
+job scarcity
 ```{r}
 ggplot(dataset, aes(x = age, fill = factor(job_scarcity))) +
   geom_bar(position = "fill") +
@@ -158,9 +160,30 @@ ggplot(dataset, aes(x = age, fill = factor(job_scarcity))) +
   scale_y_continuous(labels = scales::percent) +
   theme_minimal()
 ```
-
+With age, people will tend to agree with "when jobs are scarce, employers should give priority to {NATIONALITY} people over immigrants" more. This agreement is more pronounced, as more people will choose "Agree strongly" over "Agree", and the disagreement is vastly smaller in comparison.
 
 regression tables
+
+create new variables of interest
+```{r}
+dataset$age_squared <- (dataset$age)^2
+```
+
+create models
+```{r}
+#model 1 child suffers when mom works
+model1 <- lm(child_suffers_mom ~ age + age_squared + sex + education, data = dataset)
+
+#model 2 job scarcity impact on immigrants
+model2 <- lm(job_scarcity ~ age + age_squared + sex + education, data = dataset)
+```
+
+get summaries
+```{r}
+summary_table <- stargazer(model1, model2, type = "text")
+print(summary_table)
+```
+
 
 ##• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)
 
