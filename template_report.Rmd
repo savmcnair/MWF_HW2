@@ -9,10 +9,21 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Descriptive Statistics
+##Descriptive Statistics
 
 ```{r}
 knitr::kable(continuous_summary)
+knitr::kable(combined_summary)
+```
+
+##Age Interpretation
+```{r}
+age_interpretation
+```
+
+##Sex interpretation
+```{r}
+sex_interpretation
 ```
 
 ##Graphs 
