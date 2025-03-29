@@ -1,27 +1,21 @@
 ---
-title: "MWF_HW2"
+title: "report_with_code"
 author: "Savannah McNair"
-date: "2025-03-28"
-output: html_document
+date: "2025-03-29"
+output:
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#1. Get EVS data. The data you want is ZA7500. You can find it here: https://search.gesis.org/research_data/ZA7500 (10%)
-I made a research account under my UMD email, smcnair1@umd.edu to download the data. I downloaded the SPSS version of the data, and stored it in the folder I will be working out of for this assignment.
+Overview of data: 
+The European Values Study is a comprehensive, cross-national, and longitudinal survey that examines Europeans' views on topics such as family, work, religion, politics, and society. Conducted every nine years, starting in 1981, the survey offers valuable insights into the beliefs, attitudes, preferences, values, and opinions of citizens throughout Europe. The survey has been repeated in the following years: 1990, 1999, 2008, and 2017, with the next wave scheduled for 2026. Each wave includes an increasing number of participating countries, expanding its scope across Europe and beyond.
 
-#2. Write an overall report as a pdf.
-The two variables of interest are v72 and v80 (I’ll let you discover what exactly they measure). Other variables
-you should keep are age, education, sex and country. For the overall report I would like to have a short
-intro about the research and data (one paragraph), a section with descriptives that includes max two tables
-(e.g., one for continuous variables and one for categorical variables), a section that includes two graphs: how
-the two variables of interest change with age, and a section with two regression models explaining the two
-dependent variables. The model should include: age, age squared, sex and education. The results from both
-models should be presented in a single table. Add a sentence or two interpreting each table and graph.
+For this analysis, we have selected a subset of variables from the dataset, including: the age of the respondent ("age"), the education of the respondent (recoded into three categories, "v243_r"), the sex of the respondent ("v225"), and the country (with abbreviation) ("c_abrv"). Additionally, two variables are Likert scales: child suffers with a working mother (1-4 scale, "v72") and jobs are scarce, giving priority to the nation (1-5 scale, "v80").
 
-##• clean data for analysis (20%)
+• clean data for analysis (20%)
 necessary packages
 ```{r}
 library(haven)
@@ -40,14 +34,21 @@ names(dataset)
 ```
 
 Observations from first glance at data:
-age variable is "age"
-education of respondent recoded into 3 categories is "v243_r"
-sex of respondent "v225"
-country (with abbreviation) is "c_abrv"
-v72 is child suffers with working mother (1-4)
-v80 is jobs are scarce... giving (nation) priority (1-5)
 
-_DE columns are duplicates with many NAs, I won't need these for my analyses
+- age variable is "age"
+
+- education of respondent recoded into 3 categories is "v243_r"
+
+- sex of respondent "v225"
+
+- country (with abbreviation) is "c_abrv"
+
+- v72 is child suffers with working mother (1-4)
+
+- v80 is jobs are scarce... giving (nation) priority (1-5)
+
+- _DE columns are duplicates with many NAs, I won't need these for my analyses
+
 
 remove _DE columns
 ```{r}
@@ -86,6 +87,7 @@ library(summarytools)
 ```
 
 descriptive tables
+
 continuous - given that child suffers and job scarcity variables are bipolar lickert scales with numerical values, im making the analytical decision to include them here
 ```{r}
 continuous_summary <- data.frame(
@@ -100,9 +102,11 @@ continuous_summary <- data.frame(
             max(dataset$job_scarcity) - min(dataset$job_scarcity))
 )
 ```
+
 ```{r}
 print(continuous_summary)
 ```
+
 We can learn a number of things from this table. We know that the mean and median age are very close in this population, hovering around 50 with a standard deviation o 17 years (fairly spread out). We know that over time the a people answer around 2 or 3 out of 4 (agree->disagree) for child_suffers_mom, with lower variability. We know people answer close to 2 out of 5 (agree->disagree) with higher variability on job_scarcity. 
 
 categorical 
@@ -151,6 +155,7 @@ ggplot(dataset, aes(x = age, fill = factor(child_suffers_mom))) +
   scale_y_continuous(labels = scales::percent) +  
   theme_minimal()
 ```
+
 With age, people tend to agree with the statement "when a mother works for pay, the children suffers" more. The agreement is more moderate, as most people with age will select "agree" (2) over "agree strongly" (1).
 
 job scarcity
@@ -163,6 +168,7 @@ ggplot(dataset, aes(x = age, fill = factor(job_scarcity))) +
   scale_y_continuous(labels = scales::percent) +
   theme_minimal()
 ```
+
 With age, people will tend to agree with "when jobs are scarce, employers should give priority to {NATIONALITY} people over immigrants" more. This agreement is more pronounced, as more people will choose "Agree strongly" over "Agree", and the disagreement is vastly smaller in comparison.
 
 regression tables
@@ -186,10 +192,9 @@ get summaries
 summary_table <- stargazer(model1, model2, type = "text")
 print(summary_table)
 ```
+
 Model 1 (child_suffers_mom) suggests that age, sex, and education are significantly associated with whether people think a child suffers when the mother works, with sex and education being positively related to the outcome and age showing a slight negative relationship.
 
 Model 2 (job_scarcity) finds that education and sex are significant predictors of peoples thoughts that job scarcity should give priority in jobs to nationals over immigrants. Education has a positive association with this variable, and being male slightly reduces this impact.
 
 However, both models have low R² values, meaning they only explain a small portion of the variance in the dependent variables, and there may be other factors not captured by these models that influence the outcomes.
-
-##• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)
