@@ -11,6 +11,7 @@ Done in master_script.
 Done in master_script.
 
 *• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)*
+I created separate scripts so I could alter the output of the code in the pdfs using include=FALSE. These are stored in outputs.
 
 *3. Country level automated report in html.*
 *• the 33 reports and the syntax that produces them (20%)*

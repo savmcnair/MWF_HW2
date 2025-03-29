@@ -191,5 +191,3 @@ Model 1 (child_suffers_mom) suggests that age, sex, and education are significan
 Model 2 (job_scarcity) finds that education and sex are significant predictors of peoples thoughts that job scarcity should give priority in jobs to nationals over immigrants. Education has a positive association with this variable, and being male slightly reduces this impact.
 
 However, both models have low R² values, meaning they only explain a small portion of the variance in the dependent variables, and there may be other factors not captured by these models that influence the outcomes.
-
-##• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)
