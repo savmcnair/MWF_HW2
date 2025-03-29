@@ -1,0 +1,200 @@
+---
+title: "report_with_code"
+author: "Savannah McNair"
+date: "2025-03-29"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Overview of data: 
+The European Values Study is a comprehensive, cross-national, and longitudinal survey that examines Europeans' views on topics such as family, work, religion, politics, and society. Conducted every nine years, starting in 1981, the survey offers valuable insights into the beliefs, attitudes, preferences, values, and opinions of citizens throughout Europe. The survey has been repeated in the following years: 1990, 1999, 2008, and 2017, with the next wave scheduled for 2026. Each wave includes an increasing number of participating countries, expanding its scope across Europe and beyond.
+
+For this analysis, we have selected a subset of variables from the dataset, including: the age of the respondent ("age"), the education of the respondent (recoded into three categories, "v243_r"), the sex of the respondent ("v225"), and the country (with abbreviation) ("c_abrv"). Additionally, two variables are Likert scales: child suffers with a working mother (1-4 scale, "v72") and jobs are scarce, giving priority to the nation (1-5 scale, "v80").
+
+• clean data for analysis (20%)
+necessary packages
+```{r}
+library(haven)
+library(stargazer)
+```
+
+pull in data 
+```{r}
+location <- "C:/Users/smcnair1/Desktop/MWF_HW2/ZA7500_v5-0-0.sav/ZA7500_v5-0-0.sav"
+dataset <- read_sav(location)
+```
+
+examine data 
+```{r}
+names(dataset)
+```
+
+Observations from first glance at data:
+
+- age variable is "age"
+
+- education of respondent recoded into 3 categories is "v243_r"
+
+- sex of respondent "v225"
+
+- country (with abbreviation) is "c_abrv"
+
+- v72 is child suffers with working mother (1-4)
+
+- v80 is jobs are scarce... giving (nation) priority (1-5)
+
+- _DE columns are duplicates with many NAs, I won't need these for my analyses
+
+
+remove _DE columns
+```{r}
+dataset <- dataset[, !grepl('_DE', names(dataset))]
+```
+
+remove incomplete questionnaires
+```{r}
+dataset <- dataset[dataset$fmissings != 1, ]
+```
+
+keep only the columns of interest (above are the variables I selected)
+```{r}
+dataset <- dataset[, c("age", "v243_r", "v225", "c_abrv", "v72", "v80")]
+```
+
+remove entries where education level question was refused and remove rows with NAs
+```{r}
+dataset <- dataset[dataset$v243_r != 66, ]
+dataset <- na.omit(dataset)
+```
+
+rename columns, keep attributes
+```{r}
+colnames(dataset) <- c("age", "education", "sex", "country", "child_suffers_mom", "job_scarcity")
+```
+
+now we have a clean, relevant, analyzable dataset!
+
+##• descriptive tables, graphs and regression tables (20%)
+necessary packages
+```{r}
+library(dplyr)
+#install.packages("summarytools")
+library(summarytools)
+```
+
+descriptive tables
+
+continuous - given that child suffers and job scarcity variables are bipolar lickert scales with numerical values, im making the analytical decision to include them here
+```{r}
+continuous_summary <- data.frame(
+  Variable = c("age", "child_suffers_mom", "job_scarcity"),
+  Mean = c(mean(dataset$age), mean(dataset$child_suffers_mom), mean(dataset$job_scarcity)),
+  Median = c(median(dataset$age), median(dataset$child_suffers_mom), median(dataset$job_scarcity)),
+  SD = c(sd(dataset$age), sd(dataset$child_suffers_mom), sd(dataset$job_scarcity)),
+  Min = c(min(dataset$age), min(dataset$child_suffers_mom), min(dataset$job_scarcity)),
+  Max = c(max(dataset$age), max(dataset$child_suffers_mom), max(dataset$job_scarcity)),
+  Range = c(max(dataset$age) - min(dataset$age), 
+            max(dataset$child_suffers_mom) - min(dataset$child_suffers_mom),
+            max(dataset$job_scarcity) - min(dataset$job_scarcity))
+)
+```
+
+```{r}
+print(continuous_summary)
+```
+
+We can learn a number of things from this table. We know that the mean and median age are very close in this population, hovering around 50 with a standard deviation o 17 years (fairly spread out). We know that over time the a people answer around 2 or 3 out of 4 (agree->disagree) for child_suffers_mom, with lower variability. We know people answer close to 2 out of 5 (agree->disagree) with higher variability on job_scarcity. 
+
+categorical 
+create summary
+```{r}
+get_categorical_summary <- function(variable, var_name) {
+  freq_table <- table(variable)  # Frequency table
+  prop_table <- prop.table(freq_table) * 100  # Percentage table
+  
+  summary_df <- data.frame(
+    Variable = var_name,
+    Level = names(freq_table),
+    Frequency = as.integer(freq_table),
+    Percentage = round(as.numeric(prop_table), 2)
+  )
+  
+  return(summary_df)
+}
+```
+
+create summmary for each and append to one table
+```{r}
+education_summary <- get_categorical_summary(dataset$education, "education")
+sex_summary <- get_categorical_summary(dataset$sex, "sex")
+country_summary <- get_categorical_summary(dataset$country, "country")
+
+combined_summary <- rbind(education_summary, sex_summary, country_summary)
+
+print(combined_summary)
+```
+
+This table tells us a number of things. First, that education is slightly skewed towards higher education (3) over low (1), with most falling in the medium category (2). Less people over all are men (1, 44%) as compared with women (2, 56%). Most countries make up able 2% of the overall sample. The Netherlands (NL) and Denmark (DK) are substantially larger.
+
+graphs
+necessary packages
+```{r}
+library(ggplot2)
+```
+
+child suffers when mom works
+```{r}
+ggplot(dataset, aes(x = age, fill = factor(child_suffers_mom))) +
+  geom_bar(position = "fill") +
+  labs(x = "Age", y = "Proportion", fill = "Agree (1) -> Disagree (4)") +
+  ggtitle("Agreement that 'when a mother works for pay, the children suffers', by Age") +
+  scale_y_continuous(labels = scales::percent) +  
+  theme_minimal()
+```
+
+With age, people tend to agree with the statement "when a mother works for pay, the children suffers" more. The agreement is more moderate, as most people with age will select "agree" (2) over "agree strongly" (1).
+
+job scarcity
+```{r}
+ggplot(dataset, aes(x = age, fill = factor(job_scarcity))) +
+  geom_bar(position = "fill") +
+  labs(x = "Age Group", y = "Proportion", fill = "Agree (1) -> Disagree (5)") +
+  ggtitle("Agreement that 'when jobs are scarce, employers should give 
+  priority to {NATIONALITY} people over immigrants', by Age") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal()
+```
+
+With age, people will tend to agree with "when jobs are scarce, employers should give priority to {NATIONALITY} people over immigrants" more. This agreement is more pronounced, as more people will choose "Agree strongly" over "Agree", and the disagreement is vastly smaller in comparison.
+
+regression tables
+
+create new variables of interest
+```{r}
+dataset$age_squared <- (dataset$age)^2
+```
+
+create models
+```{r}
+#model 1 child suffers when mom works
+model1 <- lm(child_suffers_mom ~ age + age_squared + sex + education, data = dataset)
+
+#model 2 job scarcity impact on immigrants
+model2 <- lm(job_scarcity ~ age + age_squared + sex + education, data = dataset)
+```
+
+get summaries
+```{r}
+summary_table <- stargazer(model1, model2, type = "text")
+print(summary_table)
+```
+
+Model 1 (child_suffers_mom) suggests that age, sex, and education are significantly associated with whether people think a child suffers when the mother works, with sex and education being positively related to the outcome and age showing a slight negative relationship.
+
+Model 2 (job_scarcity) finds that education and sex are significant predictors of peoples thoughts that job scarcity should give priority in jobs to nationals over immigrants. Education has a positive association with this variable, and being male slightly reduces this impact.
+
+However, both models have low R² values, meaning they only explain a small portion of the variance in the dependent variables, and there may be other factors not captured by these models that influence the outcomes.
