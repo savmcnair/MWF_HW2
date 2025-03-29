@@ -1,5 +1,6 @@
 # MWF_HW2
 Repo 2 for Modern Workflows in Data Science
+
 *1. Get EVS data. The data you want is ZA7500. You can find it here: https://search.gesis.org/research_data/ZA7500 (10%)*
 
 I made a research account under my UMD email, smcnair1@umd.edu to download the data. I downloaded the SPSS version of the data, and stored it in the folder I will be working out of for this assignment.
@@ -13,11 +14,13 @@ Done in master_script. I created separate versions of this for the stats and pub
 Done in master_script. I created separate versions of this for the stats and public policy outputs, report_with_code and report_no_code.
 
 *• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)*
+
 I created separate scripts so I could alter the output of the code in the pdfs using include=FALSE. The reports are stored in outputs > overall. The policy output is report_no_code and the stats output is report_with_code.
 
 *3. Country level automated report in html.*
 
 *• the 33 reports and the syntax that produces them (20%)*
+
 I used two scripts to produce these outputs, flexible_by_country and template_report. These can be found in the scripts folder. 
 
 *• dynamic (i.e., changes depending on the data) interpretation of results (10%)*
