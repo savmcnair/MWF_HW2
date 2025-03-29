@@ -1,5 +1,5 @@
 ---
-title: "report_with_code"
+title: "report_no_code"
 author: "Savannah McNair"
 date: "2025-03-29"
 output:
@@ -105,7 +105,7 @@ continuous_summary <- data.frame(
 )
 ```
 
-```{r, include=FALSE}
+```{r, echo = FALSE}
 print(continuous_summary)
 ```
 
@@ -130,7 +130,7 @@ get_categorical_summary <- function(variable, var_name) {
 ```
 
 create summmary for each and append to one table
-```{r, include=FALSE}
+```{r, echo = FALSE}
 education_summary <- get_categorical_summary(dataset$education, "education")
 sex_summary <- get_categorical_summary(dataset$sex, "sex")
 country_summary <- get_categorical_summary(dataset$country, "country")
@@ -149,7 +149,7 @@ library(ggplot2)
 ```
 
 child suffers when mom works
-```{r, include=FALSE}
+```{r, echo = FALSE}
 ggplot(dataset, aes(x = age, fill = factor(child_suffers_mom))) +
   geom_bar(position = "fill") +
   labs(x = "Age", y = "Proportion", fill = "Agree (1) -> Disagree (4)") +
@@ -161,7 +161,7 @@ ggplot(dataset, aes(x = age, fill = factor(child_suffers_mom))) +
 With age, people tend to agree with the statement "when a mother works for pay, the children suffers" more. The agreement is more moderate, as most people with age will select "agree" (2) over "agree strongly" (1).
 
 job scarcity
-```{r, include=FALSE}
+```{r, echo = FALSE}
 ggplot(dataset, aes(x = age, fill = factor(job_scarcity))) +
   geom_bar(position = "fill") +
   labs(x = "Age Group", y = "Proportion", fill = "Agree (1) -> Disagree (5)") +
@@ -190,7 +190,7 @@ model2 <- lm(job_scarcity ~ age + age_squared + sex + education, data = dataset)
 ```
 
 get summaries
-```{r, include=FALSE}
+```{r, echo = FALSE}
 summary_table <- stargazer(model1, model2, type = "text")
 print(summary_table)
 ```
