@@ -195,7 +195,3 @@ Model 2 (job_scarcity) finds that education and sex are significant predictors o
 However, both models have low R² values, meaning they only explain a small portion of the variance in the dependent variables, and there may be other factors not captured by these models that influence the outcomes.
 
 ##• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)
-
-#3. Country level automated report in html.
-##• the 33 reports and the syntax that produces them (20%)
-##• dynamic (i.e., changes depending on the data) interpretation of results (10%)

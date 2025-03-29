@@ -5,7 +5,11 @@ I made a research account under my UMD email, smcnair1@umd.edu to download the d
 
 *2. Write an overall report as a pdf.*
 *• clean data for analysis (20%)*
+Done in master_script.
+
 *• descriptive tables, graphs and regression tables (20%)*
+Done in master_script.
+
 *• two version of the report, one showing no R code (for policy makers) and one that also shows your code (for statisticians) (10%)*
 
 *3. Country level automated report in html.*

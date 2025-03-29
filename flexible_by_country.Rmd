@@ -1,0 +1,14 @@
+---
+title: "flexible_by_country"
+author: "Savannah McNair"
+date: "2025-03-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#3. Country level automated report in html.
+##• the 33 reports and the syntax that produces them (20%)
+##• dynamic (i.e., changes depending on the data) interpretation of results (10%)
