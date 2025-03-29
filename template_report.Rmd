@@ -1,0 +1,32 @@
+---
+title: "template_report"
+author: "Savannah McNair"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Descriptive Statistics
+
+```{r}
+knitr::kable(continuous_summary)
+```
+
+##Graphs 
+
+```{r}
+child_suffers_graph
+```
+
+```{r}
+job_scarcity_graph
+```
+
+##Regression Analyses
+```{r}
+summary_table
+```
+
